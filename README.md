@@ -1,3 +1,5 @@
+Much thanks to collaborator AndrewGene who was of great assistance in bringing this project into being. Check out his page at (https://github.com/AndrewGene).
+
 Simply drag and drop the file into your project.  It is built with extensions so there is no need to subclass uitextfield.
 
 ```
