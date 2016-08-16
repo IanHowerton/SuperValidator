@@ -30,14 +30,14 @@ Simply drag and drop the file into your project.  It is built with extensions so
     case SSN = 22
     case States = 23
 ```
+*Use the built-in validation types*
+Using Interface Builder thanks to an @IBDesignable field called 'Validation'...
 
-Declare your own — simple expression...
+![IB](/relative/path/to/img.jpg?raw=true "Optional Title")
+
+...programatically
 ```swift
-let zip = ValidationExpression(expression: "^\\d{5}(-\\d{4})?$", description: "Zip Code",failureDescription: "Invalid Zip Code”) 
-```
-…and apply it to a textBox programmatically 
-```swift
-txtZip.validationExpression = zip
+txtZip.validationType = .Zip
 ```
 ...then, test validation before form submission.
 ```swift
@@ -65,6 +65,16 @@ else
   print(result.failureMessage)
 }
 ```
+
+Declare your own — simple expression...
+```swift
+let zip = ValidationExpression(expression: "^\\d{5}(-\\d{4})?$", description: "Zip Code",failureDescription: "Invalid Zip Code”) 
+```
+…and apply it to a textBox programmatically 
+```swift
+txtZip.validationExpression = zip
+```
+
 **More advanced validation — adds sub-rules for more user friendly hints on how to fix a problem and text transformation / cleaning**
 
 Transformation is done BEFORE validation and is optional
