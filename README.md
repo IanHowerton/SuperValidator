@@ -1,6 +1,6 @@
 #SuperValidator#
 ##The easiest way to add validation to your Swift project##
-**(It also supports UITextField filtering)**
+It also supports UITextField filtering :)
 
 ###Installation###
 
