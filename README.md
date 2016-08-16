@@ -1,6 +1,7 @@
 Much thanks to collaborator AndrewGene who was of great assistance in bringing this project into being. Check out his page at (https://github.com/AndrewGene).
 #SuperValidator
 ##The easiest way to add validation to your Swift project
+*(It also supports UITextField filtering)**
 
 ###Installation###
 
