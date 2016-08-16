@@ -102,7 +102,7 @@ let creditCard = ValidationExpression(expression: "^(?:4[0-9]{12}(?:[0-9]{3})?|5
             transformText:
             { (card) in
                 var myString = card
-                myString = myString?.condensedWhitespace.stringByReplacingOccurrencesOfString(" ", withString: “") 
+                myString = myString?.condensedWhitespace.stringByReplacingOccurrencesOfString(" ", withString: "") 
                 return myString!
             },
             furtherValidation:{[weak self] (card) in
@@ -118,14 +118,13 @@ let creditCard = ValidationExpression(expression: "^(?:4[0-9]{12}(?:[0-9]{3})?|5
 
 func luhnTest(number: String) -> Bool
 {
-  let noSpaceNum = number.condensedWhitespace
-  let reversedInts = noSpaceNum.characters.reverse().map
-  {
-    Int(String($0))
-  }
-  return reversedInts.enumerate().reduce(0, combine: {(sum, val) in let odd = val.index % 2 == 1
-  return sum + (odd ? (val.element! == 9 ? 9 : (val.element! * 2) % 9) : val.element!)
-}) % 10 == 0
+    let noSpaceNum = number.condensedWhitespace
+    let reversedInts = noSpaceNum.characters.reverse().map{
+        Int(String($0))
+    }
+    return reversedInts.enumerate().reduce(0, combine: {(sum, val) in let odd = val.index % 2 == 1
+        return sum + (odd ? (val.element! == 9 ? 9 : (val.element! * 2) % 9) : val.element!)
+    }) % 10 == 0
 }
 ```
 
