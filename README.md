@@ -1,6 +1,5 @@
-Much thanks to collaborator AndrewGene who was of great assistance in bringing this project into being. Check out his page at (https://github.com/AndrewGene).
-#SuperValidator
-##The easiest way to add validation to your Swift project
+#SuperValidator#
+##The easiest way to add validation to your Swift project##
 **(It also supports UITextField filtering)**
 
 ###Installation###
@@ -196,3 +195,5 @@ func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRa
 - [ ] Update code to Swift 3
 
 ###Please feel free to make a pull request and add more commonly-used validations###
+
+Much thanks to collaborator AndrewGene who was of great assistance in bringing this project into being. Check out his page at (https://github.com/AndrewGene).
