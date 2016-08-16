@@ -1,8 +1,11 @@
 Much thanks to collaborator AndrewGene who was of great assistance in bringing this project into being. Check out his page at (https://github.com/AndrewGene).
+#FilterValidate
+##The easiest way to add validation to your Swift project
 
-Simply drag and drop the file into your project.  It is built with extensions so there is no need to subclass UITextField.
+Simply drag and drop the **Validation.swift** file into your project. **That's it!** It is built with extensions so there is no need to subclass UITextField.
 
-**Built In Validation Types**
+##Using the built-in validation types##
+
 ```swift
     case None = -1
     case Zip = 0
@@ -30,16 +33,15 @@ Simply drag and drop the file into your project.  It is built with extensions so
     case SSN = 22
     case States = 23
 ```
-*Use the built-in validation types*
-Using Interface Builder thanks to an @IBDesignable field called 'Validation'...
+###Using Interface Builder###
 
-![IB](/relative/path/to/img.jpg?raw=true "Optional Title")
+![IB](/IBScreenshot.png?raw=true "Interface Builder")
 
-...programatically
+###...or, programatically###
 ```swift
 txtZip.validationType = .Zip
 ```
-...then, test validation before form submission.
+***...then, test validation before form submission.***
 ```swift
 txtZip.text = "72034"        
 let result = txtZip.validate() //returns ValidationResult
@@ -54,7 +56,7 @@ class ValidationResult
     //...
 }
 ```
-Now you can check if the result is valid or not.
+**Now you can check if the result is valid or not.**
 ```swift
 if result.isValid
 {
@@ -65,23 +67,24 @@ else
   print(result.failureMessage)
 }
 ```
+##Creating your own validation expressions##
 
-Declare your own — simple expression...
+###Declare your own — simple expression...###
 ```swift
 let zip = ValidationExpression(expression: "^\\d{5}(-\\d{4})?$", description: "Zip Code",failureDescription: "Invalid Zip Code”) 
 ```
-…and apply it to a textBox programmatically 
+…and apply it to a UITextField programmatically 
 ```swift
 txtZip.validationExpression = zip
 ```
 
-**More advanced validation — adds sub-rules for more user friendly hints on how to fix a problem and text transformation / cleaning**
-
-Transformation is done BEFORE validation and is optional
+##More advanced validation##
+* adds sub-rules for more user friendly hints on how to fix a problem
+* text transformation / cleaning **(Transformation is done BEFORE validation and is optional)**
 
 **Special note:**
 
-interfaceBuilderAliases is used in the Validation class and is only relevant to the built in classes (classes referenced in the enum).  Feel free to edit the file to add your own.  The aliases are what someone can enter into IB on a UITextField in order to easily apply validation.
+**_interfaceBuilderAliases_ is used in the Validation class and is only relevant to the built in classes (classes referenced in the enum).  Feel free to edit the file to add your own.  The aliases are what someone can enter into IB on a UITextField in order to easily apply validation.**
 ```swift
 let zip = ValidationExpression(expression: "^\\d{5}(-\\d{4})?$", description: "Zip Code",failureDescription: "Invalid Zip Code", hints: [
   ValidationRule(priority: 1, expression: "\\d{5}", failureDescription: "Zip code must be 5 characters"),
@@ -96,13 +99,16 @@ let zip = ValidationExpression(expression: "^\\d{5}(-\\d{4})?$", description: "Z
 ```
 
 
-**Most advanced - hints, input text transformation, and further validation**
+###Most advanced###
+* hints
+* input text transformation
+* further validation
 
-4242 4242 4242 4243 is a credit card number that passes the regular expression check.  However, the further validation performs a Luhn check that all credit cards must pass (you can read more here: (https://en.wikipedia.org/wiki/Luhn_algorithm).
+**4242 4242 4242 4243** is a credit card number that passes the regular expression check.  However, the further validation performs a Luhn check that all credit cards must pass (you can read more here: (https://en.wikipedia.org/wiki/Luhn_algorithm).
 
 The furtherValidation closure has the transformed text as a parameter and returns a Validation Result object
 
-**NOTE** condensedWhitespace is a helper variable that gets rid of multiple side-by-side spaces in case a user mistypes into the field in IB
+**NOTE** *condensedWhitespace is a helper variable that gets rid of multiple side-by-side spaces in case a user mistypes into the field in IB*
 ```swift
 let creditCard = ValidationExpression(expression: "^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$",
             description: "Debit or Credit Card",
@@ -137,9 +143,24 @@ func luhnTest(number: String) -> Bool
     }) % 10 == 0
 }
 ```
+##Filtering UITextField##
+
+###It's built in if you use validation!###
+
+**(e.g. a textfield with a validationType set to ".Zip" (i.e. txtZip.validationType = .Zip) will get have txtZip.allowedCharacters set to the Zip constant below)**
+
+**Simply add this code to the "...shouldChangeCharactersInRange..." UITextField delegate method...**
+```swift
+func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool 
+{
+  if textField.allowedCharacters != nil{
+    return string.shouldAllow(textField.allowedCharacters!)
+  }
+  return true
+}
+```
 
 **UITextField predefined strings**
-(used for filtering input)
 ```swift
 let UpperCaseLetters = "ABCDEFGHIJKLKMNOPQRSTUVWXYZ"
 let LowerCaseLetters = "abcdefghijklmnopqrstuvwxyz"
@@ -159,14 +180,11 @@ let Phone = "0123456789.()- "
 let Zip = "0123456789-“
 ```
 
-Alternatively you can add your own using "shouldAllow(String...)"
+###Alternatively, you can add your own using "shouldAllow(String...)"###
 ```swift
 func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool 
 {
-  if textField.allowedCharacters != nil{
-    return string.shouldAllow(textField.allowedCharacters!) //allowedCharacters is pre-defined for certain validation types (e.g. zip uses the Zip constant above to determine what characters to allow
-  }
-  return string.shouldAllow(Numbers, “@#$”) // or you can enter several different strings of characters to allow
+  return string.shouldAllow(Numbers, "@#$") // you can enter several different strings of characters to allow
 }
 ```
 
