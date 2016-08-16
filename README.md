@@ -1,9 +1,9 @@
 Much thanks to collaborator AndrewGene who was of great assistance in bringing this project into being. Check out his page at (https://github.com/AndrewGene).
 
-Simply drag and drop the file into your project.  It is built with extensions so there is no need to subclass uitextfield.
+Simply drag and drop the file into your project.  It is built with extensions so there is no need to subclass UITextField.
 
+**Built In Validation Types**
 ```
-//built in validation types
 case None = -1
 case Zip = 0
 case StreetAddress = 1
@@ -28,33 +28,6 @@ case NegativeFloats = 19
 case Floats = 20
 case Text = 21
 ```
-Text field filters
-```
-let UpperCaseLetters = "ABCDEFGHIJKLKMNOPQRSTUVWXYZ"
-let LowerCaseLetters = "abcdefghijklmnopqrstuvwxyz"
-let AllLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ"
-let UpperCaseHex = "0123456789ABCDEF"
-let LowerCaseHex = "0123456789abcdef"
-let AllHex = "0123456789abcdefABCDEF"
-let PositiveWholeNumbers = "0123456789"
-let WholeNumbers = "-0123456789"
-let PositiveFloats = "0123456789."
-let Floats = "-0123456789."
-let Email = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ0123456789_-+@.%"
-let Street = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ0123456789 -#.&"
-let IPAddress = "0123456789."
-let Money = "0123456789.$"
-let Phone = "0123456789.()- "
-let Zip = "0123456789-“
-```
-
-Alternatively you can add your own using "shouldAllow(String...)"
-```
-func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool 
-{
-  return string.shouldAllow(Numbers, “@#$”)
-}
-```
 
 Declare your own — simple expression...
 ```
@@ -67,9 +40,25 @@ txtZip.validationExpression = zip
 //test validation before form submission
 ```
 txtZip.text = "72034"        
-let result = txtMUID.validate() //returns ValidationResult
+let result = txtZip.validate() //returns ValidationResult
 ```
-**show validation result class**
+**Validation Result**
+```
+class ValidationResult
+{
+    var isValid = false
+    var failureMessage : String? = nil
+    var transformedString : String = ""
+    
+    init(isValid: Bool, failureMessage:String?, transformedString: String)
+    {
+        self.isValid = isValid
+        self.failureMessage = failureMessage
+        self.transformedString = transformedString
+    }
+}
+```
+Now you can check if the result is valid or not.
 ```
 if result.isValid
 {
@@ -102,8 +91,6 @@ Most advanced - hints, input text transformation, and further validation
 4242 4242 4242 4243 is a credit card number that passes the regular expression check.  However, the further validation performs a Luhn check that all credit cards must pass (you can read more here: (https://en.wikipedia.org/wiki/Luhn_algorithm).
 The furtherValidation closure has the transformed text as a parameter and returns a Validation Result object
 
-
-**show ValidationResult object**
 ```
 let creditCard = ValidationExpression(expression: "^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$",
             description: "Debit or Credit Card",
@@ -112,18 +99,18 @@ let creditCard = ValidationExpression(expression: "^(?:4[0-9]{12}(?:[0-9]{3})?|5
             interfaceBuilderAliases: ["card","credit card","debit card","cc"],
             transformText:
             { (card) in
-              var myString = card
-              myString = myString?.condensedWhitespace.stringByReplacingOccurrencesOfString(" ", withString: “") //condensedWhitespace is a helper variable that gets rid of multiple side-by-side spaces
-              return myString!
+                var myString = card
+                myString = myString?.condensedWhitespace.stringByReplacingOccurrencesOfString(" ", withString: “") //condensedWhitespace is a helper variable that gets rid of multiple side-by-side spaces
+                return myString!
             },
             furtherValidation:{[weak self] (card) in
             if (self?.luhnTest(card))!
             {
-              return ValidationResult(isValid: true, failureMessage: nil, transformedString: card)
+                return ValidationResult(isValid: true, failureMessage: nil, transformedString: card)
             }
             else
             {
-              return ValidationResult(isValid: false, failureMessage: "Card failed Luhn check", transformedString: card)
+                return ValidationResult(isValid: false, failureMessage: "Card failed Luhn check", transformedString: card)
             }
 })
 
@@ -139,3 +126,36 @@ func luhnTest(number: String) -> Bool
 }) % 10 == 0
 }
 ```
+
+**UITextField predefined strings**
+(used for filtering input)
+```
+let UpperCaseLetters = "ABCDEFGHIJKLKMNOPQRSTUVWXYZ"
+let LowerCaseLetters = "abcdefghijklmnopqrstuvwxyz"
+let AllLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ"
+let UpperCaseHex = "0123456789ABCDEF"
+let LowerCaseHex = "0123456789abcdef"
+let AllHex = "0123456789abcdefABCDEF"
+let PositiveWholeNumbers = "0123456789"
+let WholeNumbers = "-0123456789"
+let PositiveFloats = "0123456789."
+let Floats = "-0123456789."
+let Email = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ0123456789_-+@.%"
+let Street = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ0123456789 -#.&"
+let IPAddress = "0123456789."
+let Money = "0123456789.$"
+let Phone = "0123456789.()- "
+let Zip = "0123456789-“
+```
+
+Alternatively you can add your own using "shouldAllow(String...)"
+```
+func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool 
+{
+  if textField.allowedCharacters != nil{
+    return string.shouldAllow(textField.allowedCharacters!) //allowedCharacters is pre-defined for certain validation types (e.g. zip uses the Zip constant above to determine what characters to allow
+  }
+  return string.shouldAllow(Numbers, “@#$”) // or you can enter several different strings of characters to allow
+}
+```
+
