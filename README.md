@@ -82,19 +82,25 @@ More advanced validation — adds sub-rules for more user friendly hints on how 
 Transformation is done BEFORE validation and is optional
 ```
 let zip = ValidationExpression(expression: "^\\d{5}(-\\d{4})?$", description: "Zip Code",failureDescription: "Invalid Zip Code", hints: [
-ValidationRule(priority: 1, expression: "\\d{5}", failureDescription: "Zip code must be 5 characters"),
-ValidationRule(priority: 0, expression: "[0-9]+", failureDescription: "Not numbers"),
-], interfaceBuilderAliases: ["zip","zip code"], transformText: { (zipcode) in
-var myString = zipcode
-myString = myString?.stringByReplacingOccurrencesOfString(" ", withString: "")
-return myString!
-}, furtherValidation:nil)
+  ValidationRule(priority: 1, expression: "\\d{5}", failureDescription: "Zip code must be 5 characters"),
+  ValidationRule(priority: 0, expression: "[0-9]+", failureDescription: "Not numbers"),
+  ],interfaceBuilderAliases: ["zip","zip code"], transformText: 
+    { (zipcode) in
+      var myString = zipcode
+      myString = myString?.stringByReplacingOccurrencesOfString(" ", withString: "")
+      return myString!
+    }
+, furtherValidation:nil)
 ```
-**Special note: interfaceBuilderAliases is used in the Validation class and is only relevant to the built in classes (classes referenced in the enum).  Feel free to edit the file to add your own.  The aliases are what someone can enter into IB on a textbook in order to easily apply validation.
+**Special note:**
+
+interfaceBuilderAliases is used in the Validation class and is only relevant to the built in classes (classes referenced in the enum).  Feel free to edit the file to add your own.  The aliases are what someone can enter into IB on a textbook in order to easily apply validation.
 
 Most advanced - hints, input text transformation, and further validation
 4242 4242 4242 4243 is a credit card number that passes the regular expression check.  However, the further validation performs a Luhn check that all credit cards must pass (you can read more here: (https://en.wikipedia.org/wiki/Luhn_algorithm).
 The furtherValidation closure has the transformed text as a parameter and returns a Validation Result object
+
+
 **show ValidationResult object**
 ```
 let creditCard = ValidationExpression(expression: "^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$",
