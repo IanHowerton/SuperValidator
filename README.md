@@ -69,11 +69,13 @@ let result = txtMUID.validate() //returns ValidationResult
 ```
 **show validation result class**
 ```
-if result.isValid{
-print(result.transformedString)
+if result.isValid
+{
+  print(result.transformedString)
 }
-else{
-print(result.failureMessage)
+else
+{
+  print(result.failureMessage)
 }
 ```
 More advanced validation — adds sub-rules for more user friendly hints on how to fix a problem and text transformation / cleaning
