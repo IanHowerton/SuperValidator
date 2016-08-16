@@ -1,5 +1,5 @@
 Much thanks to collaborator AndrewGene who was of great assistance in bringing this project into being. Check out his page at (https://github.com/AndrewGene).
-#FilterValidate
+#SuperValidator
 ##The easiest way to add validation to your Swift project
 
 ###Installation###
