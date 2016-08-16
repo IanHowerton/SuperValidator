@@ -90,7 +90,7 @@ let zip = ValidationExpression(expression: "^\\d{5}(-\\d{4})?$", description: "Z
       myString = myString?.stringByReplacingOccurrencesOfString(" ", withString: "")
       return myString!
     }
-, furtherValidation:nil)
+  ,furtherValidation:nil)
 ```
 **Special note:**
 
@@ -104,32 +104,36 @@ The furtherValidation closure has the transformed text as a parameter and return
 **show ValidationResult object**
 ```
 let creditCard = ValidationExpression(expression: "^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$",
-description: "Debit or Credit Card",
-failureDescription: "Invalid card",
-hints: [ValidationRule(priority: 0, expression: "\\d+", failureDescription: "Missing Numbers")],
-interfaceBuilderAliases: ["card","credit card","debit card","cc"],
-transformText:{ (card) in
-var myString = card
-myString = myString?.condensedWhitespace.stringByReplacingOccurrencesOfString(" ", withString: “") //condensedWhitespace is a helper variable that gets rid of multiple side-by-side spaces
-return myString!
-},
-furtherValidation:{[weak self] (card) in
-if (self?.luhnTest(card))!{
-return ValidationResult(isValid: true, failureMessage: nil, transformedString: card)
-}
-else{
-return ValidationResult(isValid: false, failureMessage: "Card failed Luhn check", transformedString: card)
-}
+            description: "Debit or Credit Card",
+            failureDescription: "Invalid card",
+            hints: [ValidationRule(priority: 0, expression: "\\d+", failureDescription: "Missing Numbers")],
+            interfaceBuilderAliases: ["card","credit card","debit card","cc"],
+            transformText:
+            { (card) in
+              var myString = card
+              myString = myString?.condensedWhitespace.stringByReplacingOccurrencesOfString(" ", withString: “") //condensedWhitespace is a helper variable that gets rid of multiple side-by-side spaces
+              return myString!
+            },
+            furtherValidation:{[weak self] (card) in
+            if (self?.luhnTest(card))!
+            {
+              return ValidationResult(isValid: true, failureMessage: nil, transformedString: card)
+            }
+            else
+            {
+              return ValidationResult(isValid: false, failureMessage: "Card failed Luhn check", transformedString: card)
+            }
 })
 
-func luhnTest(number: String) -> Bool{
-let noSpaceNum = number.condensedWhitespace
-let reversedInts = noSpaceNum.characters.reverse().map
+func luhnTest(number: String) -> Bool
 {
-Int(String($0))
-}
-return reversedInts.enumerate().reduce(0, combine: {(sum, val) in let odd = val.index % 2 == 1
-return sum + (odd ? (val.element! == 9 ? 9 : (val.element! * 2) % 9) : val.element!)
+  let noSpaceNum = number.condensedWhitespace
+  let reversedInts = noSpaceNum.characters.reverse().map
+  {
+    Int(String($0))
+  }
+  return reversedInts.enumerate().reduce(0, combine: {(sum, val) in let odd = val.index % 2 == 1
+  return sum + (odd ? (val.element! == 9 ? 9 : (val.element! * 2) % 9) : val.element!)
 }) % 10 == 0
 }
 ```
