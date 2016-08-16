@@ -2,9 +2,11 @@ Much thanks to collaborator AndrewGene who was of great assistance in bringing t
 #FilterValidate
 ##The easiest way to add validation to your Swift project
 
+###Installation###
+
 Simply drag and drop the **Validation.swift** file into your project. **That's it!** It is built with extensions so there is no need to subclass UITextField.
 
-##Using the built-in validation types##
+**Built-in validation types**
 
 ```swift
     case None = -1
@@ -78,7 +80,7 @@ let zip = ValidationExpression(expression: "^\\d{5}(-\\d{4})?$", description: "Z
 txtZip.validationExpression = zip
 ```
 
-##More advanced validation##
+###More advanced validation###
 * adds sub-rules for more user friendly hints on how to fix a problem
 * text transformation / cleaning **(Transformation is done BEFORE validation and is optional)**
 
@@ -187,4 +189,9 @@ func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRa
   return string.shouldAllow(Numbers, "@#$") // you can enter several different strings of characters to allow
 }
 ```
+##TODOs
+- [x] Add character filtering
+- [ ] Add more useful hints for several validationTypes
+- [ ] Update code to Swift 3
 
+###Please feel free to make a pull request and add more commonly-used validations###
