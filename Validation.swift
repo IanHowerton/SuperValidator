@@ -9,9 +9,9 @@
 import Foundation
 import UIKit
 
-let UpperCaseLetters = "ABCDEFGHIJKLKMNOPQRSTUVWXYZ"
+let UpperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 let LowerCaseLetters = "abcdefghijklmnopqrstuvwxyz"
-let AllLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ"
+let AllLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 let UpperCaseHex = "0123456789ABCDEF"
 let LowerCaseHex = "0123456789abcdef"
 let AllHex = "0123456789abcdefABCDEF"
@@ -19,8 +19,8 @@ let PositiveWholeNumbers = "0123456789"
 let WholeNumbers = "-0123456789"
 let PositiveFloats = "0123456789."
 let Floats = "-0123456789."
-let Email = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ0123456789_-+@.%"
-let Street = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ0123456789 -#.&"
+let Email = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+@.%"
+let Street = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -#.&"
 let IPAddress = "0123456789."
 let Money = "0123456789.$"
 let Phone = "0123456789.()- "
@@ -122,7 +122,7 @@ class Validation
             ValidationRule(priority: 0, expression: ".{1}", failureDescription: "Multiple decimals found")
             ], interfaceBuilderAliases: ["positive floats","+f"], transformText:nil, furtherValidation:nil)
         
-        let negativeFloats = ValidationExpression(expression: "^-[\\d]*\\.*\\d*$", description: "Negatie Floats",failureDescription: "Not a negative float", hints: [
+        let negativeFloats = ValidationExpression(expression: "^-[\\d]*\\.*\\d*$", description: "Negative Floats",failureDescription: "Not a negative float", hints: [
             ValidationRule(priority: 0, expression: ".{1}", failureDescription: "Multiple decimals found")
             ], interfaceBuilderAliases: ["negative floats","-f"], transformText:nil, furtherValidation:nil)
         
@@ -131,7 +131,11 @@ class Validation
         
         let text = ValidationExpression(expression: "^[a-zA-Z'.\\-\\s]+$", description: "Text", failureDescription: "Non-Text characters present", hints: nil, interfaceBuilderAliases: ["text"], transformText:nil, furtherValidation:nil)
         
-        expressions = [zip, streetAddress, phone, email, ipAddress, MACAddress, GPSCoordinate, GPSPoint, URL, creditCard, money, letters, lettersWithSpaces, alphaNumeric, alphaNumericWithSpaces, positiveNumbers, negativeNumbers, wholeNumbers, positiveFloats, negativeFloats, allFloats, text]
+        let ssn = ValidationExpression(expression: "^([0-9]{3}[-]*[0-9]{2}[-]*[0-9]{4})*$", description: "Social Security Numbers", failureDescription: "Invalid SSN", hints: nil, interfaceBuilderAliases: ["ssn", "ss#"], transformText:nil, furtherValidation:nil)
+        
+        let states = ValidationExpression(expression: "^(?:A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY])*$", description: "State Abbreviations", failureDescription: "Invalid 2 character state abbreviation", hints: nil, interfaceBuilderAliases: ["state","states"], transformText:nil, furtherValidation:nil)
+        
+        expressions = [zip, streetAddress, phone, email, ipAddress, MACAddress, GPSCoordinate, GPSPoint, URL, creditCard, money, letters, lettersWithSpaces, alphaNumeric, alphaNumericWithSpaces, positiveNumbers, negativeNumbers, wholeNumbers, positiveFloats, negativeFloats, allFloats, text, ssn, states]
         
     }
     
@@ -184,6 +188,8 @@ enum ValidationType : Int
     case NegativeFloats = 19
     case Floats = 20
     case Text = 21
+    case SSN = 22
+    case States = 23
 }
 
 private struct AssociatedKeys {
@@ -248,9 +254,9 @@ class ValidationExpression
         {
             self.transformedString = transformationClosure!(self.transformedString)
         }
-        var isValid = false
+       
         let test = NSPredicate(format: "SELF MATCHES %@",expression)
-        isValid = test.evaluateWithObject(self.transformedString)
+        let isValid = test.evaluateWithObject(self.transformedString)
         if isValid == false
         {
             if hints != nil && hints?.count > 0{
@@ -347,60 +353,45 @@ extension UITextField
                                     NSCharacterSet.whitespaceAndNewlineCharacterSet()
                                 ){
                                 self.validationType = ValidationType(rawValue: index)!
-                                if self.validationType == .Email{
+                                switch self.validationType {
+                                case .Email:
                                     self.allowedCharacters = Email
-                                }
-                                else if self.validationType == .Phone{
+                                case .Phone:
                                     self.allowedCharacters = Phone
-                                }
-                                else if self.validationType == .Zip{
+                                case .Zip, .SSN:
                                     self.allowedCharacters = Zip
-                                }
-                                else if self.validationType == .Zip{
-                                    self.allowedCharacters = Zip
-                                }
-                                else if self.validationType == .StreetAddress{
+                                case .StreetAddress:
                                     self.allowedCharacters = Street
-                                }
-                                else if self.validationType == .IPAddress{
+                                case .IPAddress:
                                     self.allowedCharacters = IPAddress
-                                }
-                                else if self.validationType == .Money{
+                                case .Money:
                                     self.allowedCharacters = Money
-                                }
-                                else if self.validationType == .Letters{
+                                case .Letters, .States:
                                     self.allowedCharacters = AllLetters
-                                }
-                                else if self.validationType == .LettersWithSpaces{
+                                case .LettersWithSpaces:
                                     self.allowedCharacters = AllLetters + " "
-                                }
-                                else if self.validationType == .AlphaNumeric{
+                                case .AlphaNumeric:
                                     self.allowedCharacters = AllLetters + PositiveWholeNumbers
-                                }
-                                else if self.validationType == .AlphaNumericWithSpaces{
+                                case .AlphaNumericWithSpaces:
                                     self.allowedCharacters = AllLetters + PositiveWholeNumbers + " "
-                                }
-                                else if self.validationType == .PositiveNumbers{
+                                case .PositiveNumbers:
                                     self.allowedCharacters = PositiveWholeNumbers
-                                }
-                                else if self.validationType == .PositiveFloats{
+                                case .PositiveFloats:
                                     self.allowedCharacters = PositiveFloats
-                                }
-                                else if self.validationType == .NegativeNumbers || self.validationType == .WholeNumbers{
+                                case .NegativeNumbers, .WholeNumbers:
                                     self.allowedCharacters = WholeNumbers
-                                }
-                                else if self.validationType == .NegativeFloats || self.validationType == .Floats{
+                                case .NegativeFloats, .Floats:
                                     self.allowedCharacters = Floats
-                                }
-                                else if self.validationType == .MACAddress{
+                                case .MACAddress:
                                     self.allowedCharacters = AllHex + "."
+                                default:
+                                    break
                                 }
-                                
                             }
                         }
                     }
                     else{
-                        self.validationType = ValidationType(rawValue: -1)! //.None
+                        self.validationType = .None
                     }
                 }
             }
@@ -465,13 +456,6 @@ extension String
             characterSet.addCharactersInString(str)
         }
         
-        if self.rangeOfCharacterFromSet(characterSet.invertedSet) != nil
-        {
-            return false
-        }
-        else
-        {
-            return true
-        }
+        return !(self.rangeOfCharacterFromSet(characterSet.invertedSet) != nil)
     }
 }
